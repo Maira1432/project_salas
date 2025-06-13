@@ -1,20 +1,60 @@
 import React from 'react';
+import { useMsal } from '@azure/msal-react';
+import { loginRequest } from '../authConfig';
 
 const OutlookCalendarSyncButton = ({ reservation, onSyncSuccess }) => {
-  const handleSync = () => {
-    // Esta es una simulación de la integración con el calendario de Outlook.
-    // En una aplicación real, necesitarías usar la API de Microsoft Graph
-    // para crear eventos en el calendario del usuario.
-    // Esto implicaría:
-    // 1. Obtener un token de acceso con los permisos adecuados (Calendars.ReadWrite).
-    // 2. Hacer una solicitud POST a la API de Microsoft Graph para crear el evento.
+  const { instance, accounts } = useMsal();
 
-    console.log('Simulando sincronización con Outlook Calendar para la reserva:', reservation);
+  const handleSync = async () => {
+    try {
+      const account = accounts[0];
+      const response = await instance.acquireTokenSilent({
+        ...loginRequest,
+        account,
+      });
 
-    // Simulación de éxito
-    alert(`Reserva de ${reservation.user} en ${reservation.roomId} el ${reservation.date} a las ${reservation.time} sincronizada con Outlook.`);
-    if (onSyncSuccess) {
-      onSyncSuccess();
+      const accessToken = response.accessToken;
+
+      const event = {
+        subject: `Reserva de sala: ${reservation.roomId}`,
+        body: {
+          contentType: 'HTML',
+          content: `Reserva hecha por ${reservation.user}`,
+        },
+        start: {
+          dateTime: `${reservation.date}T${reservation.time}`,
+          timeZone: 'America/Bogota',
+        },
+        end: {
+          dateTime: `${reservation.date}T${reservation.endTime || reservation.time}`,
+          timeZone: 'America/Bogota',
+        },
+        location: {
+          displayName: reservation.roomId,
+        },
+        attendees: [],
+      };
+
+      const graphResponse = await fetch('https://graph.microsoft.com/v1.0/me/events', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(event),
+      });
+
+      if (graphResponse.ok) {
+        alert(`Reserva de ${reservation.user} sincronizada con Outlook.`);
+        if (onSyncSuccess) onSyncSuccess();
+      } else {
+        const error = await graphResponse.json();
+        console.error('Error al crear evento:', error);
+        alert('No se pudo sincronizar con Outlook.');
+      }
+    } catch (error) {
+      console.error('Error de autenticación o red:', error);
+      alert('Error al obtener el token de acceso.');
     }
   };
 
