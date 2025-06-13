@@ -1,22 +1,23 @@
 import React from 'react';
+import { useMsal } from '@azure/msal-react';
+import { loginRequest } from '../authConfig';
 
 const MicrosoftLoginButton = ({ onLogin }) => {
-  // Esta es una simulación de un botón de login con Microsoft 365.
-  // En una aplicación real, necesitarías integrar una librería de autenticación de Microsoft (como MSAL.js)
-  // y configurar tu aplicación en Azure AD para manejar el flujo de OAuth 2.0.
-  // Por ahora, solo simula un login exitoso.
+  const { instance } = useMsal();
 
-  const handleLogin = () => {
-    // Aquí iría la lógica real de autenticación con Microsoft 365
-    // Por ejemplo: msalInstance.loginPopup(loginRequest);
-    console.log('Simulando login con Microsoft 365...');
-    // Simula un usuario logueado
-    const userProfile = {
-      name: 'Usuario Microsoft',
-      email: 'usuario@empresa.com',
-      id: 'ms-user-123',
-    };
-    onLogin(userProfile);
+  const handleLogin = async () => {
+    try {
+      const loginResponse = await instance.loginPopup(loginRequest);
+      const account = loginResponse.account;
+      const userProfile = {
+        name: account.name,
+        email: account.username,
+        id: account.localAccountId,
+      };
+      onLogin(userProfile);
+    } catch (error) {
+      console.error('Error al iniciar sesión con Microsoft:', error);
+    }
   };
 
   return (
