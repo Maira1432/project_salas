@@ -32,7 +32,7 @@ const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingRe
       return;
     }
 
-    onMakeReservation({ roomId: selectedRoom.id, date, time, user });
+    onMakeReservation({ roomId: selectedRoom.id, roomName: selectedRoom.name, date, time, user });
     setDate('');
     setTime('');
     setUser('');

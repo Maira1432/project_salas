@@ -100,7 +100,7 @@ const App = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <header className="bg-white p-6 rounded-2xl shadow-lg mb-8 flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">RoomReserve</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Reserva de Salas FYCO</h1>
         {currentUser && (
           <nav className="space-x-4 flex items-center">
             <span className="text-gray-700 font-medium">Hola, {currentUser.name}!</span>
@@ -134,7 +134,7 @@ const App = () => {
         {currentPage === 'login' && (
           <div className="flex justify-center items-center h-[calc(100vh-180px)]">
             <div className="bg-white p-8 rounded-2xl shadow-lg max-w-sm w-full text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Bienvenido a RoomReserve</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Bienvenido a Reserva de Salas FYCO</h2>
               <p className="text-gray-600 mb-6">Inicia sesión para gestionar tus reservas de salas.</p>
               <MicrosoftLoginButton onLogin={handleLoginSuccess} />
             </div>
