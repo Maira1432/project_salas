@@ -17,13 +17,13 @@ const App = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [editingReservation, setEditingReservation] = useState(null);
 
-  useEffect(() => {
+  /*useEffect(() => {
     setStorage('rooms', rooms);
   }, [rooms]);
 
   useEffect(() => {
     setStorage('reservations', reservations);
-  }, [reservations]);
+  }, [reservations]);*/
 
   const handleSelectRoom = (room) => {
     setSelectedRoom(room);
