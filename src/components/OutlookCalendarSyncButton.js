@@ -22,11 +22,11 @@ const OutlookCalendarSyncButton = ({ reservation, onSyncSuccess }) => {
           content: `Reserva hecha por ${reservation.user}`,
         },
         start: {
-          dateTime: `${reservation.date}T${reservation.time}`,
+          dateTime: `${reservation.date}T${reservation.startTime}`,
           timeZone: 'America/Bogota',
         },
         end: {
-          dateTime: `${reservation.date}T${reservation.endTime || reservation.time}`,
+          dateTime: `${reservation.date}T${reservation.startTime}`,
           timeZone: 'America/Bogota',
         },
         location: {
