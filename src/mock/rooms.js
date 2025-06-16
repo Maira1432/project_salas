@@ -1,7 +1,7 @@
 export const defaultRooms = [
-  { id: 'R1', name: 'Sala Alpha', capacity: 8, amenities: ['Proyector', 'Pizarra', 'Videoconferencia'], available: true },
-  { id: 'R2', name: 'Sala Beta', capacity: 4, amenities: ['Pizarra'], available: true },
-  { id: 'R3', name: 'Sala Gamma', capacity: 12, amenities: ['Proyector', 'Videoconferencia', 'Cafetera'], available: false },
-  { id: 'R4', name: 'Sala Delta', capacity: 6, amenities: ['Proyector', 'Pizarra'], available: true },
-  { id: 'R5', name: 'Sala Epsilon', capacity: 10, amenities: ['Proyector', 'Videoconferencia'], available: true },
+  { id: 'R1', name: 'Círculo de Sabios I', capacity: 5, amenities: ['Televisor', 'Pizarra', 'Videoconferencia'], available: true },
+  { id: 'R2', name: 'Círculo de Sabios II', capacity: 5, amenities: ['Televisor', 'Pizarra', 'Videoconferencia'], available: true },
+  { id: 'R3', name: 'Círculo de Sabios III', capacity: 5, amenities: ['Televisor', 'Pizarra', 'Videoconferencia'], available: true },
+  { id: 'R4', name: 'Consejo de la Tribu', capacity: 12, amenities: ['Televisor', 'Pizarra', 'Videoconferencia'], available: true },
+  { id: 'R5', name: 'Plaza de Conexiones', capacity: 6, amenities: ['Televisor', 'Pizarra', 'Videoconferencia'], available: true },
 ];
