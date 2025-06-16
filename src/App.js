@@ -11,7 +11,7 @@ import OutlookCalendarSyncButton from './components/OutlookCalendarSyncButton';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('login');
-  const [rooms, setRooms] = useState(() => createStorage('rooms', defaultRooms));
+  const [rooms, setRooms] = useState(defaultRooms);
   const [reservations, setReservations] = useState(() => createStorage('reservations', defaultReservations));
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
@@ -19,11 +19,11 @@ const App = () => {
 
   /*useEffect(() => {
     setStorage('rooms', rooms);
-  }, [rooms]);
+  }, [rooms]);*/
 
   useEffect(() => {
     setStorage('reservations', reservations);
-  }, [reservations]);*/
+  }, [reservations]);
 
   const handleSelectRoom = (room) => {
     setSelectedRoom(room);
