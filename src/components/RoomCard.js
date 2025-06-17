@@ -1,8 +1,19 @@
 import React from 'react';
 
-const RoomCard = ({ room, onSelectRoom }) => {
-  const availabilityClass = room.available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-  const buttonClass = room.available ? 'bg-black hover:bg-gray-800' : 'bg-gray-400 cursor-not-allowed';
+const RoomCard = ({ room, onSelectRoom, reservations }) => {
+  const now = new Date();
+  const currentDate = now.toISOString().split('T')[0];
+  const currentTime = now.toTimeString().slice(0, 5);
+
+  const isCurrentlyOccupied = reservations.some(res =>
+    res.roomId === room.id &&
+    res.date === currentDate &&
+    res.startTime <= currentTime &&
+    res.endTime > currentTime
+  );
+
+  const availabilityClass = !isCurrentlyOccupied ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+  const buttonClass = !isCurrentlyOccupied ? 'bg-black hover:bg-gray-800' : 'bg-gray-400 cursor-not-allowed';
 
   return (
     <div className="bg-white p-6 rounded-2xl shadow-lg flex flex-col justify-between h-full">
@@ -13,15 +24,15 @@ const RoomCard = ({ room, onSelectRoom }) => {
           Comodidades: {room.amenities.length > 0 ? room.amenities.join(', ') : 'Ninguna'}
         </p>
         <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${availabilityClass}`}>
-          {room.available ? 'Disponible' : 'No Disponible'}
+          {!isCurrentlyOccupied ? 'Disponible' : 'Ocupado'}
         </span>
       </div>
       <button
-        onClick={() => room.available && onSelectRoom(room)}
+        onClick={() => !isCurrentlyOccupied && onSelectRoom(room)}
         className={`w-full mt-4 py-2 rounded-lg text-white transition-colors ${buttonClass}`}
-        disabled={!room.available}
+        disabled={isCurrentlyOccupied}
       >
-        {room.available ? 'Reservar Sala' : 'No Disponible'}
+        {!isCurrentlyOccupied ? 'Reservar Sala' : 'No Disponible'}
       </button>
     </div>
   );

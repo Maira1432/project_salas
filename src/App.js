@@ -21,6 +21,15 @@ const App = () => {
   const [editingReservation, setEditingReservation] = useState(null);
   const { instance, accounts } = useMsal();
 
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   /*useEffect(() => {
     setStorage('rooms', rooms);
   }, [rooms]);*/
@@ -126,7 +135,22 @@ const App = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <header className="bg-white p-6 rounded-2xl shadow-lg mb-8 flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Reserva de Salas FYCO</h1>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Reserva de Salas FYCO</h1>
+          {currentUser && (
+            <p className="text-sm text-gray-500 mt-1">
+              {currentTime.toLocaleString('es-CO', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+              })}
+            </p>
+          )}
+        </div>
         {currentUser && (
           <nav className="space-x-4 flex items-center">
             <span className="text-gray-700 font-medium">Hola, {currentUser.name}!</span>
@@ -170,7 +194,7 @@ const App = () => {
         {currentUser && currentPage === 'rooms' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {rooms.map((room) => (
-              <RoomCard key={room.id} room={room} onSelectRoom={handleSelectRoom} />
+              <RoomCard key={room.id} room={room} onSelectRoom={handleSelectRoom} reservations={reservations}/>
             ))}
           </div>
         )}
