@@ -12,7 +12,9 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
       alert('Por favor, completa todos los campos.');
       return;
     }
-    onUpdateReservation({ ...reservation, roomId: selectedRoomId, date, time, user });
+    const [startTime, endTime] = time.split('-');
+    const roomName = rooms.find(r => r.id === selectedRoomId)?.name || selectedRoomId;
+    onUpdateReservation({ ...reservation, roomId: selectedRoomId, roomName, date, time, startTime, endTime, user });
   };
 
   return (

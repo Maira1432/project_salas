@@ -10,6 +10,7 @@ import EditReservationForm from './components/EditReservationForm';
 import OutlookCalendarSyncButton from './components/OutlookCalendarSyncButton';
 import { useMsal } from '@azure/msal-react';
 import { deleteOutlookEvent } from './utils/deleteOutlookEvent';
+import { updateOutlookEvent } from './utils/updateOutlookEvent';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('login');
@@ -41,7 +42,7 @@ const App = () => {
     setCurrentPage('list');
   };
 
-  const handleUpdateReservation = (updatedReservation) => {
+  const handleUpdateReservation = async (updatedReservation) => {
     // Validar si la sala ya está reservada a esa hora y fecha, excluyendo la reserva actual
     const isConflict = reservations.some(
       (res) =>
@@ -54,6 +55,14 @@ const App = () => {
     if (isConflict) {
       alert('Error: Esta sala ya está reservada para la fecha y hora seleccionadas. Por favor, elige otro horario o sala.');
       return;
+    }
+
+    // Si tiene un evento en Outlook, actualizarlo
+    if (updatedReservation.outlookEventId) {
+      const success = await updateOutlookEvent(updatedReservation, instance, accounts[0]);
+      if (!success) {
+        alert('No se pudo actualizar el evento en Outlook.');
+      }
     }
 
     setReservations(reservations.map(res =>
