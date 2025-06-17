@@ -8,6 +8,8 @@ import ReservationList from './components/ReservationList';
 import MicrosoftLoginButton from './components/MicrosoftLoginButton';
 import EditReservationForm from './components/EditReservationForm';
 import OutlookCalendarSyncButton from './components/OutlookCalendarSyncButton';
+import { useMsal } from '@azure/msal-react';
+import { deleteOutlookEvent } from './utils/deleteOutlookEvent';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('login');
@@ -16,6 +18,7 @@ const App = () => {
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [editingReservation, setEditingReservation] = useState(null);
+  const { instance, accounts } = useMsal();
 
   /*useEffect(() => {
     setStorage('rooms', rooms);
@@ -61,12 +64,24 @@ const App = () => {
     setCurrentPage('list');
   };
 
-  const handleDeleteReservation = (id) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar esta reserva?')) {
-      setReservations(reservations.filter(res => res.id !== id));
-      alert('Reserva eliminada.');
+  const handleDeleteReservation = async (id) => {
+  const reserva = reservations.find(res => res.id === id);
+  const confirmed = window.confirm('¿Estás seguro de que quieres eliminar esta reserva?');
+
+  if (!confirmed) return;
+
+  // Intentar eliminar en Outlook si tiene eventId
+  if (reserva?.outlookEventId) {
+    const success = await deleteOutlookEvent(reserva.outlookEventId, instance, accounts[0]);
+    if (!success) {
+      alert('No se pudo eliminar el evento en Outlook.');
     }
-  };
+  }
+
+  // Eliminar del estado local
+  setReservations(reservations.filter(res => res.id !== id));
+  alert('Reserva eliminada.');
+};
 
   const handleEditReservation = (reservation) => {
     setEditingReservation(reservation);
