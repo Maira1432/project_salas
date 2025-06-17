@@ -16,7 +16,7 @@ const OutlookCalendarSyncButton = ({ reservation, onSyncSuccess }) => {
       const accessToken = response.accessToken;
 
       const event = {
-        subject: `Reserva de sala: ${reservation.roomId}`,
+        subject: `Reserva de sala: ${reservation.roomName || reservation.roomId}`,
         body: {
           contentType: 'HTML',
           content: `Reserva hecha por ${reservation.user}`,
@@ -26,11 +26,11 @@ const OutlookCalendarSyncButton = ({ reservation, onSyncSuccess }) => {
           timeZone: 'America/Bogota',
         },
         end: {
-          dateTime: `${reservation.date}T${reservation.startTime}`,
+          dateTime: `${reservation.date}T${reservation.endTime}`,
           timeZone: 'America/Bogota',
         },
         location: {
-          displayName: reservation.roomId,
+          displayName: reservation.roomName || reservation.roomId,
         },
         attendees: [],
       };
