@@ -2,7 +2,7 @@ import React from 'react';
 import { useMsal } from '@azure/msal-react';
 import { loginRequest } from '../authConfig';
 
-const OutlookCalendarSyncButton = ({ reservation, onSyncSuccess }) => {
+const OutlookCalendarSyncButton = ({ reservation, onSyncSuccess, onDeleteOutlookEvent }) => {
   const { instance, accounts } = useMsal();
 
   const handleSync = async () => {
