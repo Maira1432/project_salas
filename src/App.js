@@ -35,7 +35,7 @@ const App = () => {
 
   const handleMakeReservation = (newReservation) => {
     const newId = `RES${reservations.length + 1}`;
-    const updatedReservations = [...reservations, { id: newId, ...newReservation }];
+    const updatedReservations = [...reservations, { id: newId, outlookEventId: null, ...newReservation }];
     setReservations(updatedReservations);
     alert('¡Reserva realizada con éxito!');
     setCurrentPage('list');
@@ -65,21 +65,20 @@ const App = () => {
   };
 
   const handleDeleteReservation = async (id) => {
-  const reserva = reservations.find(res => res.id === id);
-  const confirmed = window.confirm('¿Estás seguro de que quieres eliminar esta reserva?');
+    const reserva = reservations.find(r => r.id === id);
+    if (!reserva) return;
 
-  if (!confirmed) return;
+    const confirmed = window.confirm('¿Estás seguro de que quieres eliminar esta reserva?');
+    if (!confirmed) return;
 
-  // Intentar eliminar en Outlook si tiene eventId
-  if (reserva?.outlookEventId) {
-    const success = await deleteOutlookEvent(reserva.outlookEventId, instance, accounts[0]);
-    if (!success) {
-      alert('No se pudo eliminar el evento en Outlook.');
+    if (reserva.outlookEventId) {
+      const success = await deleteOutlookEvent(reserva.outlookEventId, instance, accounts[0]);
+      if (!success) {
+        alert('No se pudo eliminar el evento en Outlook.');
+      }
     }
-  }
 
-  // Eliminar del estado local
-  setReservations(reservations.filter(res => res.id !== id));
+  setReservations(reservations.filter(r => r.id !== id));
   alert('Reserva eliminada.');
 };
 
@@ -108,8 +107,11 @@ const App = () => {
     setCurrentPage('login');
   };
 
-  const handleSyncSuccess = () => {
-    console.log('Sincronización con Outlook completada.');
+  const handleSyncSuccess = (eventId, reservationId) => {
+    const updatedList = reservations.map(res => 
+      res.id === reservationId ? { ...res, outlookEventId: eventId } : res
+    );
+    setReservations(updatedList);
   };
 
   return (
@@ -184,7 +186,14 @@ const App = () => {
             {reservations.length > 0 && (
               <div className="mt-8 text-center">
                 <p className="text-gray-600 mb-4">¿Quieres sincronizar tus reservas con Outlook?</p>
-                <OutlookCalendarSyncButton reservation={reservations[0]} onSyncSuccess={handleSyncSuccess} />
+                {reservations.map(res => (
+                  <div key={res.id} className="mb-4">
+                    <OutlookCalendarSyncButton
+                      reservation={res}
+                      onSyncSuccess={(eventId) => handleSyncSuccess(eventId, res.id)}
+                    />
+                  </div>
+                ))}
               </div>
             )}
           </>
