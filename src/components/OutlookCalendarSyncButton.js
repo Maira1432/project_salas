@@ -45,8 +45,9 @@ const OutlookCalendarSyncButton = ({ reservation, onSyncSuccess }) => {
       });
 
       if (graphResponse.ok) {
+        const createdEvent = await graphResponse.json();
         alert(`Reserva de ${reservation.user} sincronizada con Outlook.`);
-        if (onSyncSuccess) onSyncSuccess();
+        if (onSyncSuccess) onSyncSuccess(createdEvent.id);
       } else {
         const error = await graphResponse.json();
         console.error('Error al crear evento:', error);
