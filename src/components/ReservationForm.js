@@ -4,6 +4,7 @@ const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingRe
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [user, setUser] = useState('');
+  const [guests, setGuests] = useState('');
   const [error, setError] = useState('');
 
   // Horarios disponibles para la selección
@@ -33,10 +34,27 @@ const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingRe
     }
 
     const [startTime, endTime] = time.split('-');
-    onMakeReservation({ roomId: selectedRoom.id, roomName: selectedRoom.name, date, time, startTime, endTime, user });
-    setDate('');
-    setTime('');
-    setUser('');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const attendeeEmails = guests
+      .split(',')
+      .map(email => email.trim())
+      .filter(email => email.length > 0 && emailRegex.test(email));
+
+    if (guests && attendeeEmails.length === 0) {
+      setError('Los correos de invitados ingresados no son válidos.');
+      return;
+    }
+
+    onMakeReservation({
+      roomId: selectedRoom.id,
+      roomName: selectedRoom.name,
+      date,
+      time,
+      startTime,
+      endTime,
+      user,
+      attendees: attendeeEmails,
+    });
   };
 
   return (
@@ -82,6 +100,17 @@ const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingRe
             value={user}
             onChange={(e) => setUser(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition"
+          />
+        </div>
+        <div className="mb-6">
+          <label htmlFor="guests" className="block text-gray-700 text-sm font-medium mb-2">Invitados (correos separados por coma)</label>
+          <textarea
+            id="guests"
+            placeholder="correo1@ejemplo.com, correo2@ejemplo.com"
+            value={guests}
+            onChange={(e) => setGuests(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition"
+            rows="2"
           />
         </div>
         <div className="flex justify-end space-x-4">

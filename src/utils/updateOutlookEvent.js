@@ -38,6 +38,13 @@ export const updateOutlookEvent = async (reservation, msalInstance, account) => 
       },
     };
 
+    if (Array.isArray(reservation.attendees) && reservation.attendees.length > 0) {
+      updatedEvent.attendees = reservation.attendees.map(email => ({
+        emailAddress: { address: email, name: email },
+        type: 'required',
+      }));
+    }
+
     const res = await fetch(
       `https://graph.microsoft.com/v1.0/me/events/${reservation.outlookEventId}`,
       {
