@@ -138,7 +138,8 @@ const App = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Reserva de Salas FYCO</h1>
           {currentUser && (
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 mt-1 flex items-center gap-2">
+              <span role="img" aria-label="clock">🕒</span>
               {currentTime.toLocaleString('es-CO', {
                 weekday: 'long',
                 year: 'numeric',

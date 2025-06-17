@@ -35,6 +35,13 @@ const OutlookCalendarSyncButton = ({ reservation, onSyncSuccess, onDeleteOutlook
         attendees: [],
       };
 
+      if (Array.isArray(reservation.attendees) && reservation.attendees.length > 0) {
+        event.attendees = reservation.attendees.map(email => ({
+          emailAddress: { address: email, name: email },
+          type: 'required',
+        }));
+      }
+
       const graphResponse = await fetch('https://graph.microsoft.com/v1.0/me/events', {
         method: 'POST',
         headers: {
