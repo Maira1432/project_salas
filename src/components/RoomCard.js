@@ -12,6 +12,10 @@ const RoomCard = ({ room, onSelectRoom, reservations }) => {
     res.endTime > currentTime
   );
 
+  const reservasHoy = reservations
+    .filter(res => res.roomId === room.id && res.date === currentDate)
+    .sort((a, b) => a.startTime.localeCompare(b.startTime));
+
   const availabilityClass = !isCurrentlyOccupied ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
   const buttonClass = !isCurrentlyOccupied ? 'bg-black hover:bg-gray-800' : 'bg-gray-400 cursor-not-allowed';
 
@@ -26,6 +30,23 @@ const RoomCard = ({ room, onSelectRoom, reservations }) => {
         <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${availabilityClass}`}>
           {!isCurrentlyOccupied ? 'Disponible' : 'Ocupado'}
         </span>
+        
+      {reservasHoy.length > 0 && (
+        <ul className="mt-2 text-sm text-gray-600">
+          <li className="font-medium">Reservas hoy:</li>
+          {reservasHoy.map(res => {
+            const isActive = res.startTime <= currentTime && res.endTime > currentTime;
+            return (
+              <li
+                key={res.id}
+                className={isActive ? 'font-semibold text-black' : ''}
+              >
+                {res.startTime} - {res.endTime} por {res.user}
+              </li>
+            );
+          })}
+        </ul>
+      )}
       </div>
       <button
         onClick={() => !isCurrentlyOccupied && onSelectRoom(room)}
