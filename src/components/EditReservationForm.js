@@ -25,6 +25,7 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
       '14:00 - 15:00',
       '15:00 - 16:00',
       '16:00 - 17:00',
+      '17:00 - 18:00',
   ];
   return (
     <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md mx-auto">
