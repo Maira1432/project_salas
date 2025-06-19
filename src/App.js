@@ -52,13 +52,11 @@ const App = () => {
   };
 
   const handleUpdateReservation = async (updatedReservation) => {
-    // Validar si la sala ya está reservada a esa hora y fecha, excluyendo la reserva actual
-    const isConflict = reservations.some(
-      (res) =>
-        res.id !== updatedReservation.id &&
-        res.roomId === updatedReservation.roomId &&
-        res.date === updatedReservation.date &&
-        res.time === updatedReservation.time
+    const isConflict = reservations.some(r =>
+      r.id !== updatedReservation.id &&
+      r.roomId === updatedReservation.roomId &&
+      r.date === updatedReservation.date &&
+      r.startTime === updatedReservation.startTime
     );
 
     if (isConflict) {
@@ -66,7 +64,6 @@ const App = () => {
       return;
     }
 
-    // Si tiene un evento en Outlook, actualizarlo
     if (updatedReservation.outlookEventId) {
       const success = await updateOutlookEvent(updatedReservation, instance, accounts[0]);
       if (!success) {
@@ -74,31 +71,28 @@ const App = () => {
       }
     }
 
-    setReservations(reservations.map(res =>
-      res.id === updatedReservation.id ? updatedReservation : res
-    ));
+    setReservations(prev =>
+      prev.map(r => r.id === updatedReservation.id ? updatedReservation : r)
+    );
     alert('Reserva actualizada con éxito!');
     setEditingReservation(null);
     setCurrentPage('list');
   };
 
-  const handleDeleteReservation = async (id) => {
-    const reserva = reservations.find(r => r.id === id);
-    if (!reserva) return;
-
+  const handleDeleteReservation = async (reservation) => {
     const confirmed = window.confirm('¿Estás seguro de que quieres eliminar esta reserva?');
     if (!confirmed) return;
 
-    if (reserva.outlookEventId) {
-      const success = await deleteOutlookEvent(reserva.outlookEventId, instance, accounts[0]);
+    if (reservation.outlookEventId) {
+      const success = await deleteOutlookEvent(reservation.outlookEventId, instance, accounts[0]);
       if (!success) {
         alert('No se pudo eliminar el evento en Outlook.');
       }
     }
 
-  setReservations(reservations.filter(r => r.id !== id));
-  alert('Reserva eliminada.');
-};
+    setReservations(prev => prev.filter(r => r.id !== reservation.id));
+    alert('Reserva eliminada.');
+  };
 
   const handleEditReservation = (reservation) => {
     setEditingReservation(reservation);
