@@ -104,9 +104,9 @@ const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingRe
         </div>
         <div className="mb-6">
           <label className="block text-gray-700 text-sm font-medium mb-2">Invitados</label>
-          <UserSearchInput onSelect={(email) => {
+          <UserSearchInput onSelect={(user) => {
             if (!guests.find(g => g.email === email.mail)) {
-              setGuests([...guests, { name: email.displayName, email: email.mail }]);
+              setGuests([...guests, { name: user.name, email: user.name }]);
             }
           }} />
           {guests.map((guest, index) => (

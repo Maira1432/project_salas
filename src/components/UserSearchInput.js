@@ -44,7 +44,7 @@ const UserSearchInput = ({ onSelect }) => {
   };
 
   const handleSelect = (user) => {
-    onSelect(user.mail);
+    onSelect({ name: user.displayName, email: user.mail });
     setQuery('');
     setShowDropdown(false);
   };
