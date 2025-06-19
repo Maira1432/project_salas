@@ -16,7 +16,16 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
     const roomName = rooms.find(r => r.id === selectedRoomId)?.name || selectedRoomId;
     onUpdateReservation({ ...reservation, roomId: selectedRoomId, roomName, date, time, startTime, endTime, user });
   };
-
+  const horariosDisponibles = [
+      '08:00 - 09:00',
+      '09:00 - 10:00',
+      '10:00 - 11:00',
+      '11:00 - 12:00',
+      '13:00 - 14:00',
+      '14:00 - 15:00',
+      '15:00 - 16:00',
+      '16:00 - 17:00',
+  ];
   return (
     <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md mx-auto">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Editar Reserva</h2>
@@ -44,16 +53,21 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition"
           />
         </div>
-        <div className="mb-4">
+        <div className="mb-6">
           <label htmlFor="time" className="block text-gray-700 text-sm font-medium mb-2">Hora</label>
-          <input
-            type="text"
+          <select
             id="time"
-            placeholder="Ej: 10:00-11:00"
             value={time}
             onChange={(e) => setTime(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition"
-          />
+          >
+            <option value="">Selecciona una hora</option>
+            {horariosDisponibles.map((hora) => (
+              <option key={hora} value={hora}>
+                {hora}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="mb-6">
           <label htmlFor="user" className="block text-gray-700 text-sm font-medium mb-2">Tu Nombre</label>

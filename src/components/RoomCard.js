@@ -5,12 +5,18 @@ const RoomCard = ({ room, onSelectRoom, reservations }) => {
   const currentDate = now.toISOString().split('T')[0];
   const currentTime = now.toTimeString().slice(0, 5);
 
-  const isCurrentlyOccupied = reservations.some(res =>
-    res.roomId === room.id &&
-    res.date === currentDate &&
-    res.startTime <= currentTime &&
-    res.endTime > currentTime
-  );
+  const isCurrentlyOccupied = reservations.some(res => {
+    if (res.roomId !== room.id || res.date !== currentDate) return false;
+
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    const [startH, startM] = res.startTime.split(':');
+    const [endH, endM] = res.endTime.split(':');
+
+    const startMinutes = parseInt(startH) * 60 + parseInt(startM);
+    const endMinutes = parseInt(endH) * 60 + parseInt(endM);
+
+    return nowMinutes >= startMinutes && nowMinutes < endMinutes;
+  });
 
   const reservasHoy = reservations
     .filter(res => res.roomId === room.id && res.date === currentDate)
