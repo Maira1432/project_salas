@@ -34,6 +34,12 @@ const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingRe
       return;
     }
 
+    const totalAsistentes = 1 + guests.length; // 1 por el usuario principal
+    if (totalAsistentes > selectedRoom.capacity) {
+      setError(`Esta sala permite máximo ${selectedRoom.capacity} personas. Actualmente tienes ${totalAsistentes}.`);
+      return;
+    }
+
     const [startTime, endTime] = time.split('-');
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const attendeeEmails = guests
@@ -56,6 +62,9 @@ const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingRe
       attendees: attendeeEmails,
     });
   };
+
+  const asistentesActuales = 1 + guests.length;
+  const limiteAlcanzado = asistentesActuales >= selectedRoom.capacity;
 
   return (
     <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md mx-auto">
@@ -104,11 +113,20 @@ const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingRe
         </div>
         <div className="mb-6">
           <label className="block text-gray-700 text-sm font-medium mb-2">Invitados</label>
-          <UserSearchInput onSelect={(user) => {
-            if (!guests.find(g => g.email === email.mail)) {
-              setGuests([...guests, { name: user.name, email: user.name }]);
-            }
-          }} />
+          <UserSearchInput
+            onSelect={(user) => {
+              if (!guests.find(g => g.email === user.email)) {
+                setGuests([...guests, { name: user.name, email: user.email }]);
+              }
+            }}
+            clearOnSelect={true}
+            disabled={limiteAlcanzado}
+          />
+          {limiteAlcanzado && (
+            <p className="text-sm text-red-600 mt-2">
+              Has alcanzado el máximo de personas permitido para esta sala.
+            </p>
+          )}
           {guests.map((guest, index) => (
             <span
               key={index}
@@ -137,7 +155,12 @@ const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingRe
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+            disabled={limiteAlcanzado}
+            className={`px-6 py-2 rounded-lg transition-colors ${
+              limiteAlcanzado
+                ? 'bg-gray-400 cursor-not-allowed text-white'
+                : 'bg-black text-white hover:bg-gray-800'
+            }`}
           >
             Confirmar Reserva
           </button>
