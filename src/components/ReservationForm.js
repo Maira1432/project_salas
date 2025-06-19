@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import UserSearchInput from './UserSearchInput';
 
 const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingReservations }) => {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [user, setUser] = useState('');
-  const [guests, setGuests] = useState('');
+  const [guests, setGuests] = useState([]);
   const [error, setError] = useState('');
 
   // Horarios disponibles para la selección
@@ -36,11 +37,10 @@ const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingRe
     const [startTime, endTime] = time.split('-');
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const attendeeEmails = guests
-      .split(',')
-      .map(email => email.trim())
-      .filter(email => email.length > 0 && emailRegex.test(email));
+      .map(g => g.email)
+      .filter(email => emailRegex.test(email));
 
-    if (guests && attendeeEmails.length === 0) {
+    if (guests.length > 0 && attendeeEmails.length === 0) {
       setError('Los correos de invitados ingresados no son válidos.');
       return;
     }
@@ -103,15 +103,29 @@ const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingRe
           />
         </div>
         <div className="mb-6">
-          <label htmlFor="guests" className="block text-gray-700 text-sm font-medium mb-2">Invitados (correos separados por coma)</label>
-          <textarea
-            id="guests"
-            placeholder="correo1@ejemplo.com, correo2@ejemplo.com"
-            value={guests}
-            onChange={(e) => setGuests(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition"
-            rows="2"
-          />
+          <label className="block text-gray-700 text-sm font-medium mb-2">Invitados</label>
+          <UserSearchInput onSelect={(email) => {
+            if (!guests.find(g => g.email === email.mail)) {
+              setGuests([...guests, { name: email.displayName, email: email.mail }]);
+            }
+          }} />
+          {guests.map((guest, index) => (
+            <span
+              key={index}
+              className="inline-flex items-center bg-gray-200 text-gray-800 text-sm px-3 py-1 rounded-full mr-2 mt-2"
+            >
+              {guest.name || guest.email}
+              <button
+                type="button"
+                onClick={() => {
+                  setGuests(guests.filter(g => g.email !== guest.email));
+                }}
+                className="ml-2 text-gray-500 hover:text-red-500 font-bold"
+              >
+                ×
+              </button>
+            </span>
+          ))}
         </div>
         <div className="flex justify-end space-x-4">
           <button
@@ -134,5 +148,3 @@ const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingRe
 };
 
 export default ReservationForm;
-
-// DONE
