@@ -11,5 +11,5 @@ export const msalConfig = {
 };
 
 export const loginRequest = {
-  scopes: ['User.Read', 'Calendars.ReadWrite'],
+  scopes: ['User.Read', 'Calendars.ReadWrite', 'User.ReadBasic.All'],
 };
