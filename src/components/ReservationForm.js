@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import UserSearchInput from './UserSearchInput';
 
-const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingReservations }) => {
+const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingReservations, isEditing = false }) => {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [user, setUser] = useState('');
@@ -61,6 +61,25 @@ const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingRe
       user,
       attendees: attendeeEmails,
     });
+
+    if (!isEditing) {
+      // Esperar a que la reserva se cree y luego intentar sincronizar automáticamente
+      setTimeout(() => {
+        const lastReservation = {
+          roomId: selectedRoom.id,
+          roomName: selectedRoom.name,
+          date,
+          time,
+          startTime,
+          endTime,
+          user,
+          attendees: attendeeEmails,
+        };
+        if (typeof window.handleOutlookSync === 'function') {
+          window.handleOutlookSync(lastReservation);
+        }
+      }, 500);
+    }
   };
 
   const asistentesActuales = 1 + guests.length;
