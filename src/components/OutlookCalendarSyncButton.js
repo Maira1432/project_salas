@@ -43,8 +43,14 @@ const OutlookCalendarSyncButton = ({ reservation, onSyncSuccess, onDeleteOutlook
         }));
       }
 
-      const graphResponse = await fetch('https://graph.microsoft.com/v1.0/me/events', {
-        method: 'POST',
+      const url = reservation.outlookEventId
+        ? `https://graph.microsoft.com/v1.0/me/events/${reservation.outlookEventId}`
+        : 'https://graph.microsoft.com/v1.0/me/events';
+
+      const method = reservation.outlookEventId ? 'PATCH' : 'POST';
+
+      const graphResponse = await fetch(url, {
+        method,
         headers: {
           Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
