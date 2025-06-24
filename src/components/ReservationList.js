@@ -1,4 +1,5 @@
 import React from 'react';
+import { deleteOutlookEvent } from '../utils/deleteOutlookEvent';
 
 const ReservationList = ({ reservations, rooms, onEditReservation, onDeleteReservation }) => {
   const getRoomName = (roomId) => {
@@ -29,7 +30,12 @@ const ReservationList = ({ reservations, rooms, onEditReservation, onDeleteReser
                   Editar
                 </button>
                 <button
-                  onClick={() => onDeleteReservation(reservation)}
+                  onClick={async () => {
+                    if (reservation.outlookEventId) {
+                      await deleteOutlookEvent(reservation.outlookEventId, window.msalInstance, window.account);
+                    }
+                    onDeleteReservation(reservation);
+                  }}
                   className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                 >
                   Eliminar

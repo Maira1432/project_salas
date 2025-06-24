@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import UserSearchInput from './UserSearchInput';
+import API_BASE_URL from '../apiConfig';
 
 const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingReservations, isEditing = false }) => {
   const [date, setDate] = useState('');
@@ -51,35 +52,35 @@ const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingRe
       return;
     }
 
-    onMakeReservation({
-      roomId: selectedRoom.id,
-      roomName: selectedRoom.name,
-      date,
-      time,
-      startTime,
-      endTime,
-      user,
-      attendees: attendeeEmails,
+    fetch(`${API_BASE_URL}/reservas`, {
+      method: isEditing ? 'PUT' : 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        roomId: selectedRoom.id,
+        roomName: selectedRoom.name,
+        date,
+        time,
+        startTime,
+        endTime,
+        user,
+        attendees: attendeeEmails,
+      }),
+    })
+    .then(res => res.json())
+    .then(data => {
+      onMakeReservation(data);
+      if (!isEditing && typeof window.handleOutlookSync === 'function') {
+        setTimeout(() => {
+          window.handleOutlookSync(data);
+        }, 500);
+      }
+    })
+    .catch(err => {
+      console.error('Error al reservar:', err);
+      setError('Hubo un problema al realizar la reserva. Intenta nuevamente.');
     });
-
-    if (!isEditing) {
-      // Esperar a que la reserva se cree y luego intentar sincronizar automáticamente
-      setTimeout(() => {
-        const lastReservation = {
-          roomId: selectedRoom.id,
-          roomName: selectedRoom.name,
-          date,
-          time,
-          startTime,
-          endTime,
-          user,
-          attendees: attendeeEmails,
-        };
-        if (typeof window.handleOutlookSync === 'function') {
-          window.handleOutlookSync(lastReservation);
-        }
-      }, 500);
-    }
   };
 
   const asistentesActuales = 1 + guests.length;

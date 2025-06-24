@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../apiConfig';
 
 const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel }) => {
   const [date, setDate] = useState(reservation.date);
@@ -13,8 +14,30 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
       return;
     }
     const [startTime, endTime] = time.split('-');
-    const roomName = rooms.find(r => r.id === selectedRoomId)?.name || selectedRoomId;
-    onUpdateReservation({ ...reservation, roomId: selectedRoomId, roomName, date, time, startTime, endTime, user });
+    fetch(`${API_BASE_URL}/reservas/outlook/${reservation.outlookEventId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...reservation,
+        roomId: selectedRoomId,
+        roomName: rooms.find(r => r.id === selectedRoomId)?.name || selectedRoomId,
+        date,
+        time,
+        startTime,
+        endTime,
+        user,
+      }),
+    })
+    .then(res => res.json())
+    .then(updated => {
+      onUpdateReservation(updated);
+    })
+    .catch(err => {
+      console.error('Error al actualizar la reserva:', err);
+      alert('Error al actualizar la reserva.');
+    });
   };
   const horariosDisponibles = [
       '08:00 - 09:00',

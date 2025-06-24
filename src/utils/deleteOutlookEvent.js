@@ -29,6 +29,10 @@ export const deleteOutlookEvent = async (eventId, msalInstance, account) => {
       }
     );
 
+    if (!deleteRes.ok) {
+      const errorText = await deleteRes.text();
+      console.warn('Fallo al eliminar evento:', deleteRes.status, errorText);
+    }
     return deleteRes.ok;
   } catch (error) {
     console.error('Error al eliminar el evento de Outlook:', error);
