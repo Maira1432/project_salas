@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import UserSearchInput from './UserSearchInput';
 import API_BASE_URL from '../apiConfig';
+import { db } from "./firebaseConfig"; // Ajusta la ruta si es necesario
+import { collection, addDoc, Timestamp } from "firebase/firestore";
 
 const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingReservations, isEditing = false }) => {
   const [date, setDate] = useState('');
@@ -16,7 +18,7 @@ const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingRe
     '16:00-17:00', '17:00-18:00'
   ];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -52,12 +54,8 @@ const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingRe
       return;
     }
 
-    fetch(`${API_BASE_URL}/reservas`, {
-      method: isEditing ? 'PUT' : 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    try {
+      const reserva = {
         roomId: selectedRoom.id,
         roomName: selectedRoom.name,
         date,
@@ -66,21 +64,23 @@ const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingRe
         endTime,
         user,
         attendees: attendeeEmails,
-      }),
-    })
-    .then(res => res.json())
-    .then(data => {
-      onMakeReservation(data);
+        createdAt: Timestamp.now()
+      };
+
+      const docRef = await addDoc(collection(db, "reservas"), reserva);
+
+      const nuevaReserva = { id: docRef.id, ...reserva };
+      onMakeReservation(nuevaReserva);
+
       if (!isEditing && typeof window.handleOutlookSync === 'function') {
         setTimeout(() => {
-          window.handleOutlookSync(data);
+          window.handleOutlookSync(nuevaReserva);
         }, 500);
       }
-    })
-    .catch(err => {
-      console.error('Error al reservar:', err);
+    } catch (err) {
+      console.error('Error al guardar en Firestore:', err);
       setError('Hubo un problema al realizar la reserva. Intenta nuevamente.');
-    });
+    }
   };
 
   const asistentesActuales = 1 + guests.length;
