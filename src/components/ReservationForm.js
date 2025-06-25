@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import UserSearchInput from './UserSearchInput';
-import API_BASE_URL from '../apiConfig';
-import { db } from "./firebaseConfig"; // Ajusta la ruta si es necesario
+import { db } from "../firebaseConfig";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 
 const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingReservations, isEditing = false }) => {
