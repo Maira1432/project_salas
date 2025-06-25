@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import API_BASE_URL from '../apiConfig';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
 
 const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel }) => {
   const [date, setDate] = useState(reservation.date);
@@ -14,6 +16,11 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
       return;
     }
     const [startTime, endTime] = time.split('-');
+    if (!reservation.outlookEventId) {
+      console.error('Falta el ID del evento de Outlook');
+      alert('Error: No se puede actualizar porque falta el ID del evento de Outlook.');
+      return;
+    }
     fetch(`${API_BASE_URL}/reservas/outlook/${reservation.outlookEventId}`, {
       method: 'PUT',
       headers: {
@@ -31,8 +38,24 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
       }),
     })
     .then(res => res.json())
-    .then(updated => {
-      onUpdateReservation(updated);
+    .then(async updated => {
+      try {
+        const reservaRef = doc(db, "reservas", reservation.firestoreId);
+        await updateDoc(reservaRef, {
+          ...reservation,
+          roomId: selectedRoomId,
+          roomName: rooms.find(r => r.id === selectedRoomId)?.name || selectedRoomId,
+          date,
+          time,
+          startTime,
+          endTime,
+          user,
+        });
+        onUpdateReservation(updated);
+      } catch (error) {
+        console.error('Error al actualizar en Firestore:', error);
+        alert('Se actualizó en Outlook, pero falló en Firestore.');
+      }
     })
     .catch(err => {
       console.error('Error al actualizar la reserva:', err);
