@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from './firebaseConfig';
 import { createStorage, getStorage, setStorage } from './utils/storage';
 import { defaultRooms } from './mock/rooms';
 import { defaultReservations } from './mock/reservations';
@@ -61,6 +63,16 @@ const App = () => {
 
     if (isConflict) {
       alert('Error: Esta sala ya está reservada para la fecha y hora seleccionadas. Por favor, elige otro horario o sala.');
+      return;
+    }
+
+    // Actualizar en Firestore
+    try {
+      const docRef = doc(db, 'reservations', updatedReservation.firestoreId);
+      await updateDoc(docRef, updatedReservation);
+    } catch (error) {
+      console.error('Error al actualizar en Firestore:', error);
+      alert('Error al actualizar en la base de datos.');
       return;
     }
 
