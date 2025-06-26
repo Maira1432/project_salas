@@ -15,7 +15,7 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
       alert('Por favor, completa todos los campos.');
       return;
     }
-    const [startTime, endTime] = time.split('-');
+    const [startTime, endTime] = (time || '').split(' - ');
     if (!reservation.outlookEventId) {
       console.error('Falta el ID del evento de Outlook');
       alert('Error: No se puede actualizar porque falta el ID del evento de Outlook.');
