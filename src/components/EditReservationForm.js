@@ -16,6 +16,14 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
       return;
     }
     const [startTime, endTime] = (time || '').split(' - ');
+    if (!startTime || !endTime) {
+      alert('Error en el formato de hora. Asegúrate de seleccionar un rango válido.');
+      return;
+    }
+    if (!reservation.firestoreId) {
+      alert('Error: No se encontró el ID del documento en Firestore.');
+      return;
+    }
     if (!reservation.outlookEventId) {
       console.error('Falta el ID del evento de Outlook');
       alert('Error: No se puede actualizar porque falta el ID del evento de Outlook.');
@@ -40,6 +48,14 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
     .then(res => res.json())
     .then(async updated => {
       try {
+        console.log('Enviando a Firestore:', {
+          roomId: selectedRoomId,
+          date,
+          time,
+          startTime,
+          endTime,
+          user,
+        });
         const reservaRef = doc(db, "reservas", reservation.firestoreId);
         await updateDoc(reservaRef, {
           ...reservation,
