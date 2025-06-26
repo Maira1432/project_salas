@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from './firebaseConfig';
 import { createStorage, getStorage, setStorage } from './utils/storage';
 import { defaultRooms } from './mock/rooms';
@@ -24,6 +24,23 @@ const App = () => {
   const { instance, accounts } = useMsal();
 
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const fetchReservations = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, 'reservations'));
+        const fetched = snapshot.docs.map(doc => ({
+          ...doc.data(),
+          firestoreId: doc.id
+        }));
+        setReservations(fetched);
+      } catch (error) {
+        console.error("Error al obtener reservas de Firestore:", error);
+      }
+    };
+
+    fetchReservations();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
