@@ -24,7 +24,10 @@ const ReservationList = ({ reservations, rooms, onEditReservation, onDeleteReser
               </div>
               <div className="flex space-x-2">
                 <button
-                  onClick={() => onEditReservation(reservation)}
+                  onClick={() => {
+                    console.log("Reserva seleccionada para editar:", reservation);
+                    onEditReservation(reservation);
+                  }}
                   className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                 >
                   Editar
