@@ -14,7 +14,7 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
     console.log('EditReservationForm recibió reservation:', reservation);
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!date || !time || !user || !selectedRoomId) {
       alert('Por favor, completa todos los campos.');
@@ -35,13 +35,10 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
       alert('Error: No se puede actualizar porque falta el ID del evento de Outlook.');
       return;
     }
-    fetch(`${API_BASE_URL}/reservas/outlook/${reservation.outlookEventId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...reservation,
+    try {
+      const reservaRef = doc(db, "reservas", firestoreId);
+      await updateDoc(reservaRef, {
+        firestoreId,
         roomId: selectedRoomId,
         roomName: rooms.find(r => r.id === selectedRoomId)?.name || selectedRoomId,
         date,
@@ -50,42 +47,23 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
         endTime,
         user,
         invitados,
-      }),
-    })
-    .then(res => res.json())
-    .then(async updated => {
-      try {
-        console.log('Enviando a Firestore:', {
-          roomId: selectedRoomId,
-          date,
-          time,
-          startTime,
-          endTime,
-          user,
-          invitados,
-        });
-        const reservaRef = doc(db, "reservas", firestoreId);
-        await updateDoc(reservaRef, {
-          firestoreId,
-          roomId: selectedRoomId,
-          roomName: rooms.find(r => r.id === selectedRoomId)?.name || selectedRoomId,
-          date,
-          time,
-          startTime,
-          endTime,
-          user,
-          invitados,
-        });
-        onUpdateReservation(updated);
-      } catch (error) {
-        console.error('Error al actualizar en Firestore:', error);
-        alert('Se actualizó en Outlook, pero falló en Firestore.');
-      }
-    })
-    .catch(err => {
-      console.error('Error al actualizar la reserva:', err);
-      alert('Error al actualizar la reserva.');
-    });
+      });
+      onUpdateReservation({
+        ...reservation,
+        firestoreId,
+        roomId: selectedRoomId,
+        roomName: rooms.find(r => r.id === selectedRoomId)?.name || selectedRoomId,
+        date,
+        time,
+        startTime,
+        endTime,
+        user,
+        invitados,
+      });
+    } catch (error) {
+      console.error('Error al actualizar en Firestore:', error);
+      alert('Error al actualizar en la base de datos.');
+    }
   };
   const horariosDisponibles = [
       '08:00 - 09:00',
