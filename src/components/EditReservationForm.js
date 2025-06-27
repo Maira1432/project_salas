@@ -8,6 +8,11 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
   const [time, setTime] = useState(reservation.time);
   const [user, setUser] = useState(reservation.user);
   const [selectedRoomId, setSelectedRoomId] = useState(reservation.roomId);
+  const [invitados, setInvitados] = useState(reservation.invitados || []);
+
+  useEffect(() => {
+    console.log('EditReservationForm recibió reservation:', reservation);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -43,6 +48,7 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
         startTime,
         endTime,
         user,
+        invitados,
       }),
     })
     .then(res => res.json())
@@ -55,10 +61,10 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
           startTime,
           endTime,
           user,
+          invitados,
         });
         const reservaRef = doc(db, "reservas", reservation.firestoreId);
         await updateDoc(reservaRef, {
-          ...reservation,
           roomId: selectedRoomId,
           roomName: rooms.find(r => r.id === selectedRoomId)?.name || selectedRoomId,
           date,
@@ -66,6 +72,7 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
           startTime,
           endTime,
           user,
+          invitados,
         });
         onUpdateReservation(updated);
       } catch (error) {
@@ -140,6 +147,17 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
             placeholder="Nombre Completo"
             value={user}
             onChange={(e) => setUser(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition"
+          />
+        </div>
+        <div className="mb-6">
+          <label htmlFor="invitados" className="block text-gray-700 text-sm font-medium mb-2">Invitados (separados por coma)</label>
+          <input
+            type="text"
+            id="invitados"
+            placeholder="correo1@dominio.com, correo2@dominio.com"
+            value={invitados.join(', ')}
+            onChange={(e) => setInvitados(e.target.value.split(',').map(i => i.trim()))}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition"
           />
         </div>

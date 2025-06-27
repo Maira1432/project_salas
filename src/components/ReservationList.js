@@ -21,10 +21,17 @@ const ReservationList = ({ reservations, rooms, onEditReservation, onDeleteReser
                 <p className="text-gray-600">Fecha: {reservation.date}</p>
                 <p className="text-gray-600">Hora: {reservation.time}</p>
                 <p className="text-gray-600">Reservado por: {reservation.user}</p>
+                {reservation.outlookEventId && (
+                  <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded mt-1 inline-block">Sincronizado con Outlook</span>
+                )}
               </div>
               <div className="flex space-x-2">
                 <button
                   onClick={() => {
+                    if (!reservation.firestoreId) {
+                      console.warn("Reserva sin firestoreId", reservation);
+                      return;
+                    }
                     console.log("Reserva seleccionada para editar:", reservation);
                     onEditReservation(reservation);
                   }}
@@ -34,10 +41,15 @@ const ReservationList = ({ reservations, rooms, onEditReservation, onDeleteReser
                 </button>
                 <button
                   onClick={async () => {
-                    if (reservation.outlookEventId) {
-                      await deleteOutlookEvent(reservation.outlookEventId, window.msalInstance, window.account);
+                    try {
+                      if (reservation.outlookEventId) {
+                        await deleteOutlookEvent(reservation.outlookEventId, window.msalInstance, window.account);
+                      }
+                      onDeleteReservation(reservation);
+                    } catch (error) {
+                      console.error("Error eliminando evento en Outlook:", error);
+                      alert("Ocurrió un error al eliminar la reserva en Outlook.");
                     }
-                    onDeleteReservation(reservation);
                   }}
                   className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                 >
