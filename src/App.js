@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { doc, updateDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from './firebaseConfig';
-import { createStorage, getStorage, setStorage } from './utils/storage';
+// import { createStorage, getStorage, setStorage } from './utils/storage';
 import { defaultRooms } from './mock/rooms';
 import { defaultReservations } from './mock/reservations';
 import RoomCard from './components/RoomCard';
@@ -17,7 +17,7 @@ import { updateOutlookEvent } from './utils/updateOutlookEvent';
 const App = () => {
   const [currentPage, setCurrentPage] = useState('login');
   const [rooms, setRooms] = useState(defaultRooms);
-  const [reservations, setReservations] = useState(() => createStorage('reservations', defaultReservations));
+  const [reservations, setReservations] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [editingReservation, setEditingReservation] = useState(null);
@@ -53,9 +53,6 @@ const App = () => {
     setStorage('rooms', rooms);
   }, [rooms]);*/
 
-  useEffect(() => {
-    setStorage('reservations', reservations);
-  }, [reservations]);
 
   const handleSelectRoom = (room) => {
     setSelectedRoom(room);

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import UserSearchInput from './UserSearchInput';
 import { db } from "../firebaseConfig";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { collection, addDoc, Timestamp, updateDoc } from "firebase/firestore";
 
 const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingReservations, isEditing = false }) => {
   const [date, setDate] = useState('');
@@ -68,7 +68,10 @@ const ReservationForm = ({ selectedRoom, onMakeReservation, onCancel, existingRe
 
       const docRef = await addDoc(collection(db, "reservas"), reserva);
 
-      const nuevaReserva = { id: docRef.id, ...reserva };
+      // Agregamos el ID al documento en Firestore
+      await updateDoc(docRef, { firestoreId: docRef.id });
+
+      const nuevaReserva = { id: docRef.id, firestoreId: docRef.id, ...reserva };
       onMakeReservation(nuevaReserva);
 
       if (!isEditing && typeof window.handleOutlookSync === 'function') {

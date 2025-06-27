@@ -28,12 +28,18 @@ const ReservationList = ({ reservations, rooms, onEditReservation, onDeleteReser
               <div className="flex space-x-2">
                 <button
                   onClick={() => {
-                    if (!reservation.firestoreId) {
-                      console.warn("Reserva sin firestoreId", reservation);
+                    const reservationWithId = {
+                      ...reservation,
+                      firestoreId: reservation.firestoreId || reservation.id
+                    };
+
+                    if (!reservationWithId.firestoreId) {
+                      console.warn("Reserva sin firestoreId", reservationWithId);
                       return;
                     }
-                    console.log("Reserva seleccionada para editar:", reservation);
-                    onEditReservation(reservation);
+
+                    console.log("Reserva seleccionada para editar:", reservationWithId);
+                    onEditReservation(reservationWithId);
                   }}
                   className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                 >

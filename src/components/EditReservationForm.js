@@ -25,7 +25,8 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
       alert('Error en el formato de hora. Asegúrate de seleccionar un rango válido.');
       return;
     }
-    if (!reservation.firestoreId) {
+    const firestoreId = reservation.firestoreId || reservation.id;
+    if (!firestoreId) {
       alert('Error: No se encontró el ID del documento en Firestore.');
       return;
     }
@@ -63,8 +64,9 @@ const EditReservationForm = ({ reservation, rooms, onUpdateReservation, onCancel
           user,
           invitados,
         });
-        const reservaRef = doc(db, "reservas", reservation.firestoreId);
+        const reservaRef = doc(db, "reservas", firestoreId);
         await updateDoc(reservaRef, {
+          firestoreId,
           roomId: selectedRoomId,
           roomName: rooms.find(r => r.id === selectedRoomId)?.name || selectedRoomId,
           date,
