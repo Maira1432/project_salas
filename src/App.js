@@ -83,7 +83,8 @@ const App = () => {
     // Actualizar en Firestore
     try {
       const docRef = doc(db, 'reservations', updatedReservation.firestoreId);
-      await updateDoc(docRef, updatedReservation);
+      const { firestoreId, ...reservationData } = updatedReservation;
+      await updateDoc(docRef, reservationData);
     } catch (error) {
       console.error('Error al actualizar en Firestore:', error);
       alert('Error al actualizar en la base de datos.');
